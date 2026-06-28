@@ -24,9 +24,6 @@ Install my-project with npm
 
 
 
-## Screenshots
-
-![App Screenshot](https://ibb.co/1c16PtM)
 
 
 ## Run Locally
