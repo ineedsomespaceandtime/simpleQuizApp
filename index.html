@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Yourself</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h2 class="sr-only">Quiz Yourself</h2>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-brain" aria-hidden="true"></i></div>
+      <span class="logo-text">Quiz Yourself</span>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-label">Workspace</div>
+      <button class="nav-item active" onclick="showView('create')">
+        <i class="ti ti-circle-plus" aria-hidden="true"></i> Create questions
+      </button>
+      <button class="nav-item" onclick="showView('bank')">
+        <i class="ti ti-list" aria-hidden="true"></i> Question bank
+      </button>
+      <div class="nav-label">Practice</div>
+      <button class="nav-item" onclick="showView('quiz')">
+        <i class="ti ti-player-play" aria-hidden="true"></i> Take quiz
+      </button>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="q-count-chip">
+        <span>Questions saved</span>
+        <strong id="sidebar-count">0</strong>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Create a question</div>
+        <div class="topbar-sub" id="topbar-sub">Add questions to your bank</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div id="view-create" class="view show">
+        <div class="card">
+          <div class="field">
+            <label>Question type</label>
+            <select id="q-type" onchange="toggleType()">
+              <option value="multiple-choice">Multiple choice</option>
+              <option value="identification">Identification</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Question</label>
+            <input type="text" id="q-text" placeholder="Type your question here…">
+          </div>
+          <div id="mc-fields">
+            <label style="display:block;font-size:11px;font-weight:600;color:#71717a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Options</label>
+            <div class="opts-grid">
+              <div class="opt-wrap"><span class="opt-tag">A</span><input type="text" class="option-input" placeholder="First option"><input type="file" class="option-image" accept="image/*"></div>
+              <div class="opt-wrap"><span class="opt-tag">B</span><input type="text" class="option-input" placeholder="Second option"><input type="file" class="option-image" accept="image/*"></div>
+              <div class="opt-wrap"><span class="opt-tag">C</span><input type="text" class="option-input" placeholder="Third option"><input type="file" class="option-image" accept="image/*"></div>
+              <div class="opt-wrap"><span class="opt-tag">D</span><input type="text" class="option-input" placeholder="Fourth option"><input type="file" class="option-image" accept="image/*"></div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Correct option</label>
+              <input type="text" id="correct-option" placeholder="A, B, C, or D" style="max-width:120px">
+            </div>
+          </div>
+          <div id="id-fields" style="display:none">
+            <div class="field"><label>Correct answer</label><input type="text" id="correct-answer" placeholder="The answer"></div>
+            <div class="field" style="margin-bottom:0"><label>Answer image (optional)</label><input type="file" id="answer-image" accept="image/*"></div>
+          </div>
+          <div style="margin-top:18px">
+            <button class="btn btn-purple" onclick="saveQ()"><i class="ti ti-plus" aria-hidden="true"></i> Save question</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-bank" class="view">
+        <div class="card" style="padding:0;overflow:hidden">
+          <div id="bank-body"></div>
+        </div>
+      </div>
+
+      <div id="view-quiz" class="view">
+        <div id="quiz-start" class="start-wrap">
+          <div class="start-icon-wrap"><i class="ti ti-bolt" aria-hidden="true"></i></div>
+          <div class="start-h">Start a quiz session</div>
+          <div class="start-sub">Questions will be shuffled. Take your time.</div>
+          <div style="margin-bottom:16px">
+            <span style="background:#2a2a30;color:#a1a1aa;font-size:13px;padding:5px 14px;border-radius:20px"><span id="start-count" style="color:#c4b5fd;font-weight:600">0</span> questions ready</span>
+          </div>
+          <button class="btn btn-purple" onclick="startQuiz()"><i class="ti ti-player-play" aria-hidden="true"></i> Begin quiz</button>
+        </div>
+
+        <div id="quiz-active" style="display:none" class="quiz-wrap">
+          <div class="quiz-prog-row">
+            <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+            <span class="prog-label" id="prog-label">1 / 1</span>
+            <span class="score-badge" id="score-badge">0 pts</span>
+          </div>
+          <div class="quiz-q" id="quiz-q"></div>
+          <div id="quiz-opts"></div>
+          <div id="feedback" style="display:none" class="feedback"></div>
+          <div id="hint-box" style="display:none" class="hint-box"></div>
+          <div class="action-row">
+            <button class="btn btn-green" id="submit-btn" onclick="submitAnswer()"><i class="ti ti-check" aria-hidden="true"></i> Submit</button>
+            <button class="btn" id="next-btn" onclick="nextQ()" style="display:none"><i class="ti ti-arrow-right" aria-hidden="true"></i> Next</button>
+            <button class="btn btn-amber" id="hint-btn" onclick="getHint()"><i class="ti ti-bulb" aria-hidden="true"></i> Get a hint</button>
+          </div>
+        </div>
+
+        <div id="quiz-results" style="display:none">
+          <div class="results-wrap">
+            <div class="big-score" id="res-num">0<span id="res-den">/0</span></div>
+            <div class="pct-ring" id="res-pct"></div>
+            <div class="res-msg" id="res-msg"></div>
+            <div style="display:flex;gap:8px;justify-content:center">
+              <button class="btn btn-purple" onclick="restartQuiz()"><i class="ti ti-refresh" aria-hidden="true"></i> Try again</button>
+              <button class="btn" onclick="goCreate()"><i class="ti ti-plus" aria-hidden="true"></i> Add more</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
